@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>All Events</title>
+    
+    {% load static %}
+	<!-- Favicon -->
+	<link href="../static/img/favicon.ico" rel="shortcut icon"/>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="../static/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="../static/css/themify-icons.css"/>
+	<link rel="stylesheet" href="../static/css/owl.carousel.css"/>
+	<link rel="stylesheet" href="../static/css/style.css"/>
+
+
+</head>
+<body>
+
+	<!-- Header section -->
+	<header class="header-section clearfix">
+		<div class="container-fluid">
+			<a href="index.html" class="site-logo">
+				<img src="img/logo.png" alt="">
+			</a>
+			<div class="responsive-bar"><i class="fa fa-bars"></i></div>
+			<nav class="main-menu">
+				<ul class="menu-list">
+                    <li><a href="/">Home</a></li>
+					<li><a href="/events/create-event">Create Events</a></li>
+					<li><a href="/events/your-tickets">Your Tickets</a></li>										
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<!-- Header section end -->
+
+
+	<!-- Page info section -->
+	<section class="page-info-section">
+		<div class="container">
+			<h2>All Events</h2>
+			
+		</div>
+	</section>
+	<!-- Page info end -->
+
+
+
+
+
+
+
+
+
+
+
+    {% for x in EventsData %}
+
+<br>
+	<!-- About section -->
+	<section class="about-section spad" style="background: #dddeee;padding:70px 70px 160px 70px;border-radius:30px; margin:30px">
+		<div class="container" >
+			<div class="row">
+				<div class="col-lg-6 offset-lg-6 about-text">
+					<h2>{{ x.event_name }} </h2>					
+					<p>{{ x.event_description }}</p>					
+                    <form method="GET" action="/events/event-page/">
+                        <input type="hidden" value="{{x.id}}" name="id">
+                            <button type="submit" class="site-btn sb-gradients sbg-line mt-5">Buy</button>
+                        </form>
+				</div>
+			</div>
+			<div class="about-img" >
+				<img src="../{{x.image_path}}" alt="" style="border-radius: 30px;width: 550px;">
+			</div>
+		</div>
+	</section>
+	<!-- About section end -->
+
+    
+    {% endfor %}
+
+
+    	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">            
+			<div class="row spad">
+				<div class="col-md-6 col-lg-2 offset-lg-1 footer-widget">					
+					 <centre><h4>Based On</h4>	<img src="../static/img/polygon.png" class="mb-4" alt=""></centre> 
+				</div>
+				
+			</div>
+		</div>
+	</footer>
+
+
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>

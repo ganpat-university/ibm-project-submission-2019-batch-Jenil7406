@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"> </script>
+
+
+	<title>Event Page</title>
+    
+    {% load static %}
+	<!-- Favicon -->
+	<link href="../static/img/favicon.ico" rel="shortcut icon"/>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="../../static/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="../../static/css/themify-icons.css"/>
+	<link rel="stylesheet" href="../../static/css/owl.carousel.css"/>
+	<link rel="stylesheet" href="../../static/css/style.css"/>
+
+
+</head>
+<body>
+
+<script>
+
+const contract_address = "{{contract_address}}";
+var abi = "{{abi }}"
+    abi = abi.replace(/&quot;/g,"\"");
+    abi = abi.replace(/True/g,"true");
+    abi = abi.replace(/False/g,"false");
+    abi = JSON.parse(abi);  
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+const contract = new web3.eth.Contract(abi,contract_address);
+
+async function interact(){
+    
+const tokenId = "{{tokenId}}";
+const user_account = "{{user_account}}";
+const to_address = document.getElementById("to_address").value
+
+const transactionParameters = 
+{
+from: user_account,
+to: contract_address,
+gas:"100000",
+data: contract.methods.safeTransferFrom(user_account, String(to_address), tokenId).encodeABI()
+}
+
+
+check_in_status = await contract.methods.GetCheckIn(user_account).call();
+console.log(check_in_status);
+
+
+if (check_in_status == false){
+
+const txHash = await ethereum.request({
+    method: 'eth_sendTransaction',
+    params: [transactionParameters],
+});
+
+console.log("Tx Hash:")                
+console.log(txHash)                
+const transaction = await web3.eth.getTransactionReceipt(txHash);
+console.log("Receipt: ")
+console.log(transaction);
+
+}
+        else{
+                window.alert("The Ticket has been Checked in and cannot be transfered now");
+            }
+
+}
+</script>
+    
+
+    
+
+
+
+
+
+
+<!-- Header section -->
+<header class="header-section clearfix">
+    <div class="container-fluid">
+        <a href="index.html" class="site-logo">
+            <img src="img/logo.png" alt="">
+        </a>
+        <div class="responsive-bar"><i class="fa fa-bars"></i></div>
+        <nav class="main-menu">
+            <ul class="menu-list">
+                <li><a href="/">Home</a></li>								
+            </ul>
+        </nav>
+    </div>
+</header>
+<!-- Header section end -->
+
+
+
+	<!-- Page info section -->
+	<section class="page-info-section">
+		<div class="container">
+			<h2>Ticket Page</h2>
+			
+		</div>
+	</section>
+	<!-- Page info end -->
+
+
+
+	<!-- Blog section -->
+	<section class="blog-page spad">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8">
+					<div class="row">
+						<!-- blog item -->
+						<div class="col-md-12">
+							<div class="blog-item bi-feature">
+								<figure class="blog-thumb">
+									<img src="{{image_url}}" alt="{{image_url}}" style="width:650px">
+								</figure>
+								<div class="blog-text">
+									<h4 class="blog-title">{{ event_name  }}</h4>
+									<div class="post-meta">
+									</div>
+									<p>Event Checker: {{contract_address}}</p>	
+                  <p>TicketID: {{tokenId}}</p>
+                  
+                  <div class="widget-area">
+                  <div class="widget-subscribe-from">                                        
+                  <input type="text" id="to_address" name="to_addres"  placeholder="Enter Recepient Address" >                  
+                    <button class="site-btn sb-full-- sb-gradients" onclick="interact()">Transfer Ticket</button>
+                  </div>
+                  </div>
+
+								</div>
+							</div>
+						</div>	
+            					                        
+					</div>		
+          			                    
+				</div>
+          <div class="col-lg-4 col-md-6 sideber pt-5 pt-lg-0">
+          <div class="widget-area">
+            
+            <centre><h4 class="widget-title">Event QR Code</h4></centre>            
+            <img src="../../static/qr_images/qr-img.jpg">
+            
+          </div></div>
+
+      </div>
+		</div>
+	</section>
+	<!-- Blog section end -->
+
+
+	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">            
+			<div class="row spad">
+				<div class="col-md-6 col-lg-2 offset-lg-1 footer-widget">					
+					 <centre><h4>Based On</h4>	<img src="../../static/img/polygon.png" class="mb-4" alt=""></centre> 
+				</div>				
+			</div>
+		</div>
+
+
+
+	</footer>
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>

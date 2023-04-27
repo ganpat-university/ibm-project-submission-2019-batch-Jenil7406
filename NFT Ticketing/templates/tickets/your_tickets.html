@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Your Tickets</title>
+    
+    {% load static %}
+	<!-- Favicon -->
+	<link href="../../static/img/favicon.ico" rel="shortcut icon"/>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="../../static/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="../../static/css/themify-icons.css"/>
+	<link rel="stylesheet" href="../../static/css/owl.carousel.css"/>
+	<link rel="stylesheet" href="../../static/css/style.css"/>
+
+
+</head>
+<body>
+
+
+<script>
+    abi              = "{{abi}}";
+    contract_address = "{{contract_hash}}"
+
+    web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+           var contract = new web3.eth.Contract(abi,contract_address);    
+</script>
+
+<script>
+  var account = "{{user_account}}";
+  const options = {method: 'GET', headers: {accept: 'application/json'}};
+  console.log(account)
+  fetch('https://polygon-mumbai.g.alchemy.com/nft/v2/h_ITS8wdWU0T3YCRCFRmsORX4e0_j2Cb/getNFTs?owner='+account, options)
+    .then(response => response.json())
+    .then(response => console.log(response.ownedNfts))
+    .catch(err => console.error(err));
+</script>
+  
+	<!-- Header section -->
+	<header class="header-section clearfix">
+		<div class="container-fluid">
+			<a href="index.html" class="site-logo">
+				<img src="img/logo.png" alt="">
+			</a>
+			<div class="responsive-bar"><i class="fa fa-bars"></i></div>
+			<nav class="main-menu">
+				<ul class="menu-list">
+                    <li><a href="/">Home</a></li>							
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<!-- Header section end -->
+
+
+
+	<!-- Page info section -->
+	<section class="page-info-section">
+		<div class="container">
+			<h2>Your Tickets</h2>
+			
+		</div>
+	</section>
+	<!-- Page info end -->
+
+
+
+{% for x in data %}
+
+<br>
+	<!-- About section -->
+	<section class="about-section spad" style="background: #dddeee;padding:70px 70px 160px 70px;border-radius:30px; margin:30px">
+		<div class="container" >
+			<div class="row">
+				<div class="col-lg-6 offset-lg-6 about-text">
+					<h2> {{ x.contractMetadata.name}} </h2>					
+				
+          <p>Event Check: {{ x.contract.address }}</p>                              
+          <p style="font-size: 14px;">Ticket ID: {{ x.id.tokenId }}</p>
+
+            <form method="GET" action="/events/ticket-page/">
+    <input type="hidden" value="{{x.contract.address}}" name="address">
+    <input type="hidden" value="{{x.id.tokenId}}" name="tokenId">
+	<input type="hidden" value="{{x.metadata.image}}" name="image_url">
+        <button type="submit" class="site-btn sb-gradients sbg-line mt-5">View Ticket</button>
+            </form>
+          
+				</div>
+			</div>
+			<div class="about-img" >
+				<img src="{{x.metadata.image}}" alt="{{x.metadata.image}}" style="border-radius: 30px;width:550px">
+			</div>
+		</div>
+	</section>
+	<!-- About section end -->
+
+    
+    {% endfor %}
+
+
+    	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">            
+			<div class="row spad">
+				<div class="col-md-6 col-lg-2 offset-lg-1 footer-widget">					
+					 <centre><h4>Based On</h4>	<img src="../../static/img/polygon.png" class="mb-4" alt=""></centre> 
+				</div>
+				
+			</div>
+		</div>
+	</footer>
+
+
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>

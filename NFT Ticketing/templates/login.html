@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>Login</title>
+        <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    </head>
+    <body>        
+
+        <form method="POST" name="login_form" action="/login">   
+            {%csrf_token%}         
+            <input type="hidden" id="account_input" name="account_input">
+        </form>
+        
+        <script type="text/javascript">
+            // Connect Metamask to our site
+        var account = null;
+        var names =  String("{{ your_name }}");
+        (async () => {
+            if(window.ethereum){
+                await window.ethereum.send('eth_requestAccounts');
+                window.web3 = new Web3(window.ethereum);
+                var accounts = await web3.eth.getAccounts();
+                account = accounts[0];     
+                document.forms['login_form'].elements['account_input'].value = account;
+                document.forms['login_form'].submit();
+
+            }
+        })();
+        </script>        
+
+
+    </body>
+</html>

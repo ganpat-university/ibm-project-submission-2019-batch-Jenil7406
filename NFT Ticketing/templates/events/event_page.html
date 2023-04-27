@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"> </script>
+
+
+	<title>Event Page</title>
+    
+    {% load static %}
+	<!-- Favicon -->
+	<link href="../../static/img/favicon.ico" rel="shortcut icon"/>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="../../static/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="../../static/css/themify-icons.css"/>
+	<link rel="stylesheet" href="../../static/css/owl.carousel.css"/>
+	<link rel="stylesheet" href="../../static/css/style.css"/>
+
+
+</head>
+<body>
+
+    <script>                
+        var abi = "{{abi }}"
+        abi = abi.replace(/&quot;/g,"\"");
+        abi = abi.replace(/True/g,"true");
+        abi = abi.replace(/False/g,"false");
+        abi = JSON.parse(abi);        
+        const txHash = "{{ contract_address }}" ;                                            
+        console.log(txHash);    
+        console.log(abi);
+            
+         async function interact(){        
+            var txHash2 = "{{ contract_address }}" ;                                            
+            web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+            var transaction = await web3.eth.getTransactionReceipt(txHash2);
+            contract_address = transaction.contractAddress;
+    
+            console.log(contract_address);
+            
+            var contract = new web3.eth.Contract(abi,contract_address);
+            let defaultAccount;
+    
+            
+            await window.ethereum.send('eth_requestAccounts');
+            window.web3 = new Web3(window.ethereum);
+            var accounts = await web3.eth.getAccounts();
+            defaultAccount = accounts[0]; 
+    
+            console.log(defaultAccount);
+            //console.log(await contract.methods.tokenURI(0).call())
+            console.log("HI")
+            console.log("MAx Supply")
+            console.log(await contract.methods.max_supply().call());  
+            
+            //console.log(await contract.methods.tokenURI(0).call());
+            console.log("Total Supply")
+            console.log(await contract.methods.totalSupply().call());
+            console.log(await contract.methods);
+            console.log("Get CheckIn")
+            var check_in_status = await contract.methods.GetCheckIn(defaultAccount).call()
+            console.log(check_in_status);
+    
+            const transactionParameters = {
+            to: contract_address, // Required except during contract publications.
+            from: defaultAccount, // must match user's active address.
+            data: contract.methods.safeMint(defaultAccount, "{{nft_metadata}}").encodeABI() //make call to NFT smart contract     
+            };  
+    
+                  
+                    const txHash = await ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [transactionParameters],
+                    });
+                    
+            console.log(txHash)                
+            transaction = await web3.eth.getTransactionReceipt(txHash);
+            console.log(transaction);
+        
+    
+    }
+    
+    
+        async function checker(){
+            web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+            var transaction = await web3.eth.getTransactionReceipt(txHash);
+            contract_address = transaction.contractAddress;
+            console.log(contract_address);
+    
+            const input_event_hash = document.getElementById("event_checker").value ;
+            console.log(input_event_hash)
+            if (input_event_hash.toLowerCase() == contract_address.toLowerCase()){
+                window.alert("Correct Event")
+            }else{
+                window.alert("Different Event")
+            }
+        }
+    
+        async function check_owner(){
+            console.log(txHash);
+            web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+            var transaction = await web3.eth.getTransactionReceipt(txHash);
+            var contract_address = transaction.contractAddress;
+            console.log(contract_address);                        
+            var contract = new web3.eth.Contract(abi,contract_address);
+            const check_tokenID = document.getElementById("check_owner").value ;
+            let owner = await contract.methods.ownerOf(check_tokenID).call();
+            window.alert(owner);   
+        }
+    </script>
+    
+
+
+
+
+
+
+<!-- Header section -->
+<header class="header-section clearfix">
+    <div class="container-fluid">
+        <a href="index.html" class="site-logo">
+            <img src="img/logo.png" alt="">
+        </a>
+        <div class="responsive-bar"><i class="fa fa-bars"></i></div>
+        <nav class="main-menu">
+            <ul class="menu-list">
+                <li><a href="/">Home</a></li>								
+            </ul>
+        </nav>
+    </div>
+</header>
+<!-- Header section end -->
+
+
+	<!-- Page info section -->
+	<section class="page-info-section">
+		<div class="container">
+			<h2>Event Page</h2>
+			
+		</div>
+	</section>
+	<!-- Page info end -->
+
+
+	<!-- Blog section -->
+	<section class="blog-page spad">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8">
+					<div class="row">
+						<!-- blog item -->
+						<div class="col-md-12">
+							<div class="blog-item bi-feature">
+								<figure class="blog-thumb">
+									<img src="../../{{image_path}}" alt=""  style="width:650px";>
+								</figure>
+								<div class="blog-text">
+									<h4 class="blog-title">{{ event_name  }}</h4>
+									<div class="post-meta">
+									</div>
+                                    <p><span id="total_supply"></span> Purchased Out Of <span id="max_supply"></span></p>
+									<p>{{ event_description }}</p>	
+                                                                        
+                                    <button class="site-btn sb-full-- sb-gradients" onclick="interact()">Buy Ticket</button>
+                                    <br>
+                                        
+
+                                    <form method="GET" action="/events/your-events/" id="validate_form" style="display:none;">                                        
+                                        <input type="hidden" value="{{real_contract_address}}" name="contract_address">                                            
+                                        <input type="hidden" value="{{abi}}" name="abi">                                            
+                                    <button class="site-btn sb-full-- sb-gradients" type="submit" >Validate Tickets</button>
+                                    </form>
+
+                                   
+
+								</div>
+							</div>
+						</div>						                        
+					</div>					                    
+				</div>
+
+                
+				<div class="col-lg-4 col-md-6 sideber pt-5 pt-lg-0">
+					<div class="widget-area">
+						
+                        <h4 class="widget-title">Check Owner</h4>
+						<p>Know the owner account of the ticket </p>
+						<div class="widget-subscribe-from">
+							<input type="text" id="check_owner" placeholder="Enter Ticket ID">
+							<button class="site-btn sb-full-- sb-gradients" onclick="check_owner()">Check Owner</button>
+                        </div>
+					</div>
+ 
+                    <div class="widget-area">
+                        <h4 class="widget-title">Event Checker</h4>
+						<p>Check if the Hash value of the event matches with that provided in the ticket </p>
+						<div class="widget-subscribe-from">
+							<input type="text" id="event_checker" placeholder="Enter Hash value">
+							<button class="site-btn sb-full-- sb-gradients" onclick="checker()">Check</button>
+                        </div>
+
+					</div>  					
+				
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Blog section end -->
+
+
+	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">            
+			<div class="row spad">
+				<div class="col-md-6 col-lg-2 offset-lg-1 footer-widget">					
+					 <centre><h4>Based On</h4>	<img src="../../static/img/polygon.png" class="mb-4" alt=""></centre> 
+				</div>				
+			</div>
+		</div>
+	</footer>
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/main.js"></script>
+    
+    <script>
+            
+    
+
+const set_ = (async()=>{
+            var txHash2 = "{{ contract_address }}" ;                                            
+            web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+            var transaction = await web3.eth.getTransactionReceipt(txHash2);
+            contract_address = transaction.contractAddress;
+            var contract = new web3.eth.Contract(abi,contract_address);
+            document.getElementById("total_supply").innerHTML = await contract.methods.totalSupply().call();
+            document.getElementById("max_supply").innerHTML = await contract.methods.max_supply().call();
+
+            const owner = await contract.methods.owner().call();
+            
+            await window.ethereum.send('eth_requestAccounts');
+            window.web3 = new Web3(window.ethereum);
+            var accounts = await web3.eth.getAccounts();
+            let defaultAccount
+            defaultAccount = accounts[0];
+            
+            if (owner==defaultAccount){
+                document.getElementById('validate_form').style.display = "block";
+            }
+
+    })();
+    </script>
+</body>
+</html>

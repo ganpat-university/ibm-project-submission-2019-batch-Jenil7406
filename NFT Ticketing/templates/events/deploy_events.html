@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <title>Deploy the Events</title>
+        <!-- The legacy-web3 script must run BEFORE your other scripts. -->
+        
+    <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"> </script>
+
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+      alert("{{ message }}");
+    </script>
+    {% endfor %}
+    {% endif %}
+
+</head>
+
+
+    </head>
+    <body>
+        
+        <form method="POST" name="deploy_contract_form" action="/events/deploy-event/">   
+            {%csrf_token%}         
+            <input type="hidden" id="contract_hash" name="contract_hash">
+            <input type="hidden" id="abi" name="abi">
+        </form>
+
+        <script>
+                
+            var abi = "{{abi }}"
+            abi = abi.replace(/&#x27;/g,"\"");
+            abi = abi.replace(/True/g,"true");
+            abi = abi.replace(/False/g,"false");
+            abi = JSON.parse(abi);        
+
+            var bytecode = "{{ bytecode }}";
+            console.log("ByteCode")
+            console.log(bytecode);
+            console.log("Abi")
+            console.log(abi);
+            
+            
+            
+            const deployContract = (async () => {   //async function deployContract(){
+                web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+ 
+                let defaultAccount;
+
+                await window.ethereum.send('eth_requestAccounts');
+                window.web3 = new Web3(window.ethereum);
+                var accounts = await web3.eth.getAccounts();
+                defaultAccount = accounts[0]; 
+
+
+                const transactionParameters = {
+                gas: "470000",
+                from: defaultAccount,
+                data: bytecode        
+                };  
+
+                const txHash = await ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [transactionParameters],
+                });
+               console.log(txHash);
+                console.log("Deployed");
+
+                // const transaction = await web3.eth.getTransactionReceipt("0xb8c4b57b934f11f95ff46ca242a8bc3c2f1723297ce7a0c1ecc4279270531f86");
+                // const contract_address = transaction.contractAddress;
+                // console.log("Contract Address")
+                // console.log(contract_address);
+
+ 
+                abi = (JSON.stringify(abi));
+                document.forms['deploy_contract_form'].elements['contract_hash'].value = txHash;
+                document.forms['deploy_contract_form'].elements['abi'].value = abi;
+                document.forms['deploy_contract_form'].submit();
+            })();
+
+        </script>
+
+        <!-- <button type="button" onclick="deployContract()"> Deploy Events</button> -->
+        
+    
+        <!--     
+        {% for x in EventsData %}
+
+        <div>
+            <h1>
+                {{ x.event_name }}
+            </h1>
+            <h3>
+                {{ x.event_description }}
+            </h3>
+        </div>
+
+        {% endfor %} -->
+
+
+    </body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Create Event</title>
+	
+    {% load static %}
+    <!-- Favicon -->
+	<link href="img/favicon.ico" rel="shortcut icon"/>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="../../static/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="../../static/css/themify-icons.css"/>
+	<link rel="stylesheet" href="../../static/css/owl.carousel.css"/>
+	<link rel="stylesheet" href="../../static/css/style.css"/>
+
+</head>
+<body>
+
+    <!-- Header section -->
+    <header class="header-section clearfix">
+        <div class="container-fluid">
+            <a href="index.html" class="site-logo">
+                <img src="img/logo.png" alt="">
+            </a>
+            <div class="responsive-bar"><i class="fa fa-bars"></i></div>
+            <nav class="main-menu">
+                <ul class="menu-list">
+                    <li><a href="/">Home</a></li>								
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <!-- Header section end -->
+
+
+
+	<!-- Page info section -->
+	<section class="page-info-section">
+		<div class="container">
+			<h2>Create Event</h2>
+		</div>
+	</section>
+	<!-- Page info end -->
+
+
+
+	<!-- Contact section -->
+	<section class="contact-page spad">
+		<div class="container">
+			<div class="row">
+
+                {% if user.is_authenticated %}
+
+                    <form class="contact-form" method="POST" action="/events/create-event/" id="create_events_form" enctype="multipart/form-data">
+                        {%csrf_token%}
+
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<input class="check-form" type="text" id="event_name" name="event_name" placeholder="Event Name" required>
+									<span><i class="ti-check"></i></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+                                    <label for="start_date">Start Date</label>
+									<input class="check-form" type="date"  id="start_date" name="start_date" placeholder="Start Date" required>
+									<span><i class="ti-check"></i></span>                                    
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<input class="check-form" type="number"  id="max_tickets" name="max_tickets" placeholder="Max Tickets">
+									<span><i class="ti-check"></i></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+                                    <br>
+                                    <label for="end_date">End Date</label>
+									<input class="check-form" type="date"  id="end_date" name="end_date" placeholder="End Date" >
+									<span><i class="ti-check"></i></span>
+								</div>
+							</div>
+                        
+                            <div class="col-md-6">
+								<div class="form-group">
+									<input class="check-form" type="number"   placeholder="Ticket Price">
+									<span><i class="ti-check"></i></span>
+								</div>
+							</div>
+						
+							<div class="col-md-12">
+								<div class="form-group">
+                                    <textarea id="event_description" name="event_description" form="create_events_form" placeholder="Enter Event Description" required></textarea>							
+								</div>							
+
+								<div class="form-group">
+									<input type="file" class="check-form" placeholder="Upload Event Image" name="image_upload">
+								</div>							
+
+								<button type="submit" class="site-btn sb-gradients mt-4">Build Event</button>                                
+							</div>
+						</div>
+					</form>
+				
+                {% else %}
+                <h2>You need to login  first  </h2><br>
+                <div style="margin-left: 30px;"><button type="submit" class="site-btn" ><a href="/login" >Login</a></button></div>
+    
+            {% endif %}
+    
+
+
+				
+                
+			</div>
+		</div>
+	</section>
+	<!-- Contact section end -->
+
+	<!-- Footer section -->
+	<footer class="footer-section">
+		<div class="container">            
+			<div class="row spad">
+				<div class="col-md-6 col-lg-2 offset-lg-1 footer-widget">					
+					 <centre><h4>Based On</h4>	<img src="../../static/img/polygon.png" class="mb-4" alt=""></centre> 
+				</div>				
+			</div>
+		</div>
+	</footer>
+    
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/owl.carousel.min.js"></script>
+	<script src="js/main.js"></script>
+
+
+
+	<!-- load for map -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0YyDTa0qqOjIerob2VTIwo_XVMhrruxo"></script>
+	<script src="js/map.js"></script>
+
+</body>
+</html>

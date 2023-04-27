@@ -1,0 +1,141 @@
+<html><head>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"> </script>
+
+</head>
+<body>
+
+<script>
+    const contract_address = "{{contract_address}}";
+var abi = "{{abi }}";
+    abi = abi.replace(/&quot;/g,"\"");
+    abi = abi.replace(/True/g,"true");
+    abi = abi.replace(/False/g,"false");    
+    abi = JSON.parse(abi); 
+
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/"));
+const contract = new web3.eth.Contract(abi,contract_address);
+
+
+async function check_in(msg){    
+const tokenId      =  msg.slice(46);
+const check_in_add = msg.slice(0,42);
+const user_account = "{{user_account}}";
+
+console.log(tokenId);
+console.log(check_in_add);
+console.log(user_account);
+
+const transactionParameters = 
+{
+from: user_account,
+to: contract_address,
+gas:"100000",
+data: contract.methods.UpdateCheckIn(check_in_add).encodeABI()
+}
+
+
+check_in_status = await contract.methods.GetCheckIn(user_account).call();
+console.log(check_in_status);
+
+
+if (check_in_status == false){
+
+const txHash = await ethereum.request({
+    method: 'eth_sendTransaction',
+    params: [transactionParameters],
+});
+
+document.getElementById("result").innerHTML =
+    '<span class="result">' + "Success "+ "</span>";
+
+}
+        else{
+                window.alert("The Ticket has been already Checked In");
+            
+            document.getElementById("result").innerHTML =
+    '<span class="error">' + "error" + "</span>";
+        }
+        }
+
+</script>    
+
+{% if user.is_authenticated %}
+
+<style>h1 {
+    text-align: center;
+  }
+  
+  #reader {
+    width: 500px;
+  }
+  
+  .result {
+    background-color: green;
+    color: #fff;
+    padding: 20px;
+  }
+  
+  .error {
+    background-color: rgb(243, 56, 24);
+    color: #fff;
+    padding: 20px 40px;
+  }
+  
+
+  .row {
+    display: flex;
+  }
+  
+  #reader__scan_region {
+    background: white;
+  }
+</style>
+
+
+<h1>Scan Tickets</h1>
+<!-- QR SCANNER CODE BELOW  -->
+<div class="row">
+  <div class="col">
+    <div id="reader"></div>
+  </div>
+  <div class="col" style="padding: 30px">
+    <h4>Scan Result </h4>
+    <div id="result">   
+    </div>
+  </div>
+</div>
+
+<script>
+    // When scan is successful fucntion will produce data
+function onScanSuccess(data) {
+check_in(data);
+}
+
+// When scan is unsuccessful fucntion will produce error message
+function onScanError(errorMessage) {
+  // Handle Scan Error
+}
+
+// Setting up Qr Scanner properties
+var html5QrCodeScanner = new Html5QrcodeScanner("reader", {
+  fps: 10,
+  qrbox: 250
+});
+
+// in
+html5QrCodeScanner.render(onScanSuccess, onScanError);
+
+</script>
+
+
+
+
+
+
+{% else %}
+    <h2>You need to login  first</h2>
+    <button type="submit"><a href="/login">Login</a></button>
+
+{% endif %}
